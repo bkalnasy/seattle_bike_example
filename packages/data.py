@@ -8,7 +8,13 @@ def get_fremont_data(filename = "fremont.csv", url = FREMONT_URL, force_download
     """" Download and cache the fremont data. Returns data as pandas.dataframe"""
     if force_download or not os.path.exists(filename):
         urlretrieve(url, filename)
-    data = pd.read_csv('fremont.csv', index_col ='Date', parse_dates = True)
+    data = pd.read_csv('fremont.csv', index_col ='Date')
+    
+    try:
+        data.index = pd.to_datetime(data.index, format='%m/%d/%Y %I:%M:%S %p')
+    except TypeError:
+        data.index = pd.to_datetime(data.index)
+        
     data.columns = ['West', 'East']
     data['Total'] = data['West'] + data['East']
     return data
